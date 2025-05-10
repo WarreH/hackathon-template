@@ -1,16 +1,12 @@
-from fastapi import APIRouter
-from pydantic import BaseModel
+from fastapi import APIRouter, Query
 
-from app.modules.location.location_py_model import PyLocation
-from app.modules.recommendation.recommendation_py_models import RecommendedResult
-
-
-class PyRecQuery(BaseModel):
-    location: PyLocation
-    interests: list[str]
+from app.modules.recommendation.recommendation_py_models import PyRecommendedResult, PyRecQuery
+from app.systems.recommendation_computations.recommendation_computation import recommend_locations
 
 rec_router = APIRouter(prefix="/recommend", tags=["recommend"])
 
 @rec_router.get("")
-async def get_recommendations(user_query_param: PyRecQuery) -> list[RecommendedResult]:
-    return []
+async def get_recommendations(user_query_param: PyRecQuery,
+                              limit = Query(default=10, ge=1, le=15)) -> list[PyRecommendedResult]:
+    return await recommend_locations(user_query_param=user_query_param,
+                                     n_recommendations=limit)
