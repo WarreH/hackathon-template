@@ -1,6 +1,8 @@
 from app.modules.recommendation.algorithms.gemini_score import gemini_together
 from app.modules.recommendation.algorithms.generate_description import gemini_description, gemini_batch_description
 from app.modules.recommendation.recommendation_py_models import PyRecommendedResult, PyCandidateResult, PyRecQuery
+from unicodedata import category
+from backend.app.modules.dataset.tag_extraction import Data
 
 
 def personalise_computation(user_query: PyRecQuery, candidates: list[PyCandidateResult]) -> list[PyRecommendedResult]:
@@ -12,7 +14,7 @@ def personalise_computation(user_query: PyRecQuery, candidates: list[PyCandidate
     :return:
     """
     resulting_scores = []
-
+    data = Data()
     ensemble_scores: list[dict[str, float]] = [{}] * len(candidates)
 
     # Generating description
@@ -27,6 +29,11 @@ def personalise_computation(user_query: PyRecQuery, candidates: list[PyCandidate
         for candidate in candidates:
             description = gemini_description(candidate)
             candidate.osm_tags["description"] = description
+
+    for candidate in candidates:
+        label = data.label_candidate(candidate)
+        candidate.osm_tags["label"] = label
+
 
     # Gemini evaluate together
     print("Scoring together")
