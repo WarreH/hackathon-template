@@ -45,10 +45,10 @@ def gemini_together(user_query: PyRecQuery,
         evaluated_result = eval(formatted_result)
     except Exception as e:
         print(f"{formatted_result} gives {e}")
-        evaluated_result = [0.1] * len(candidates)
+        return [0.1] * len(candidates)
 
-    if not evaluated_result:
-        evaluated_result = [0.1] * len(candidates)
+    if not evaluated_result or len(evaluated_result) == 0:
+         return [0.1] * len(candidates)
 
     # Fixing missing values
     evaluated_result += [min(evaluated_result)] * (len(candidates) - len(evaluated_result))
