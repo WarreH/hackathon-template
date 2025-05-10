@@ -36,7 +36,7 @@ if settings.is_debug:
         "http://127.0.0.1:8000"
     ]
 
-app_name = "Tripify"
+app_name = "North Start Compass"
 
 # -----
 # Middleware
