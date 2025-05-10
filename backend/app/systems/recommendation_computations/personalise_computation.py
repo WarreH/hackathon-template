@@ -34,7 +34,6 @@ def personalise_computation(user_query: PyRecQuery, candidates: list[PyCandidate
     for i, candidate in enumerate(candidates):
         ensemble_scores[i]["gemini_together"] = together_scores[i]
 
-    print("Boop")
     for ensemble, candidate in zip(ensemble_scores, candidates):
         score = sum(ensemble.values())
 

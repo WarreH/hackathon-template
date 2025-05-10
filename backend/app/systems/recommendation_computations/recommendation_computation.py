@@ -40,9 +40,6 @@ async def recommend_locations(duck: DuckDBPyConnection,
                                     reverse=True)
     print(list(map(lambda p: p.score, sorted_recommendations)))
 
-    print(sorted_recommendations[0])
-    print(sorted_recommendations[-1])
-
     return [recommendation for
             recommendation in
             sorted_recommendations[:min(n_recommendations, len(sorted_recommendations))]
