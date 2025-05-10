@@ -1,14 +1,26 @@
 import { useNavigation } from '@react-navigation/native'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button, Input, Text, XStack, YStack } from 'tamagui'
 
 const defaultInterests = ['Music', 'Art', 'Travel', 'Tech', 'Fitness']
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function StartScreen() {
   const navigation = useNavigation()
   const [interests, setInterests] = useState(defaultInterests)
   const [selected, setSelected] = useState<string[]>([])
   const [newInterest, setNewInterest] = useState('')
+
+
+const storeList = async (list: string[]) => {
+  try {
+    // Convert the list into a JSON string and store it
+    await AsyncStorage.setItem('@interests', JSON.stringify(list));
+    console.log('List stored successfully');
+  } catch (error) {
+    console.error('Error storing list', error);
+  }
+};
 
   const toggleInterest = (interest: string) => {
     console.log('Toggling interest:', interest)
@@ -28,10 +40,34 @@ export default function StartScreen() {
       toggleInterest(trimmed)
     }
   }
+  const fetchList = async () => {
+    try {
+      const storedList = await AsyncStorage.getItem('@interests');
+      if (storedList !== null) {
+        // Parse the JSON string back into an array
+  const    list =  JSON.parse(storedList);
+  return list
+      } else {
+        console.log('No list found in storage');
+        return [];
+      }
+    } catch (error) {
+      console.error('Error fetching list', error);
+      return [];
+    }
+  };
 
+  useEffect(()=>{
+    fetchList().then((list)=>{
+        if(list.length > 0){
+          navigation.navigate('MainTabs')
+        }
+    })
+  })
   const start = ()=>{
     // Save interests somewhere
     console.log(interests)
+    storeList(interests)
     // Navigate into main
     navigation.navigate('MainTabs')
   }

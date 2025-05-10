@@ -123,13 +123,17 @@ def find_closest_entries_by_tag_match(embedding_df,all_keys, keyword, top_k=20):
     return  top_results
 
 
-def apply_cosine_simularity(df):
+def apply_cosine_simularity(df,keywords):
     # Generate embeddings for the tags
     embedding_df, tag_keys = build_tag_embedding_matrix(df)
 
-    top_matches = find_closest_entries_by_tag_match(embedding_df, tag_keys, "cycling", top_k=20)
+    matches = []
+    for keyword in keywords:
+        top_matches = find_closest_entries_by_tag_match(embedding_df, tag_keys, keyword, top_k=20)
+        matches.extend(top_matches)
 
-    indexes = [i for i, _ in top_matches]
+    top_results = sorted(matches, key=lambda x: x[1], reverse=True)[:20]
+    indexes = [i for i, _ in top_results]
     return df.iloc[indexes]
 
 #  For testing

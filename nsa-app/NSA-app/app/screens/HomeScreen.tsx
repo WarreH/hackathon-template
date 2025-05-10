@@ -1,10 +1,12 @@
 import { useNavigation } from '@react-navigation/native';
 import { Button, Image, Text, View, XStack, YStack } from 'tamagui';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useCameraPermissions, Camera, CameraView, CameraType } from 'expo-camera';
 import { ActivityIndicator, TouchableOpacity } from 'react-native';
 
 import { AntDesign, Entypo, MaterialIcons } from '@expo/vector-icons'
+import * as Location from 'expo-location'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Dummy data for the cards
 const cardData = [
@@ -37,6 +39,79 @@ export default function HomeScreen() {
   const [picId,setPicId] = useState<any>(null);
   const [loading, setLoading] = useState(false)
   const [resultImageUrl, setResultImageUrl] = useState<string | null>(null)
+  const [places, setPlaces] = useState<any[]>(cardData)
+
+const [interests, setInterests] = useState<any[]>([])
+async function fetchRecommendations() {
+  try {
+    // Ask for permission
+    const { status } = await Location.requestForegroundPermissionsAsync()
+    if (status !== 'granted') {
+      throw new Error('Location permission not granted')
+    }
+
+    // Get current location
+    const location = await Location.getCurrentPositionAsync({})
+    const { latitude, longitude } = location.coords
+
+    // Build the request body
+    const body = {
+      location: {
+        latitude: latitude,
+        longitude: longitude
+      },
+      user_identifier: 'example_user',
+      interests: interests,
+    }
+
+    // Fetch data using POST method and send the body in JSON format
+    const response = await fetch('http://192.168.84.177:8080/recommend', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch recommendations')
+    }
+
+    const data = await response.json()
+    console.log('Received:', data)
+    setPlaces(data) // This will update the state with the fetched places
+
+  } catch (error) {
+    console.error('Error fetching location-based recommendations:', error)
+  }
+}
+
+const fetchList = async () => {
+  try {
+    const storedList = await AsyncStorage.getItem('@interests');
+    if (storedList !== null) {
+      // Parse the JSON string back into an array
+const    list =  JSON.parse(storedList);
+setInterests(list)
+    } else {
+      console.log('No list found in storage');
+      return [];
+    }
+  } catch (error) {
+    console.error('Error fetching list', error);
+    return [];
+  }
+};
+useEffect(()=>{
+ fetchList().then(()=>{
+  // setInterval(()=>{
+  //   console.log("Fetching")
+  //   fetchRecommendations()
+  // },10000)
+ })
+
+},[])
+
   const handleTakePicture = async (id:any) => {
     console.log('Taking picture...');
     // You can use expo-camera's takePictureAsync here.
@@ -136,7 +211,7 @@ export default function HomeScreen() {
       {/* List of Cards */}
      { !takingPic &&
        <YStack rowGap="$3">
-       {cardData.map((card) => (
+       {places.map((card) => (
          <XStack
            key={card.id}
            backgroundColor="$background"
@@ -150,11 +225,11 @@ export default function HomeScreen() {
            justifyContent="space-between"
          >
            {/* Image */}
-           <Image source={{ uri: card.imageUrl }} width={100} height={100} />
+           {/* <Image source={{ uri: card.imageUrl }} width={100} height={100} /> */}
 
            {/* Card Content */}
            <YStack flex={1} verticalAlign="flex-start">
-             <Text fontSize={18} fontWeight="600">{card.title}</Text>
+             <Text fontSize={18} fontWeight="600">{card.name} - {Math.round(card.distance)}km</Text>
              <Text fontSize={14} color="gray10">{card.description}</Text>
            </YStack>
 

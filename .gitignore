@@ -11,3 +11,4 @@ wheels/
 
 .env
 .idea
+backend/duck_db.duckdb
