@@ -129,10 +129,10 @@ def apply_cosine_simularity(df,keywords):
 
     matches = []
     for keyword in keywords:
-        top_matches = find_closest_entries_by_tag_match(embedding_df, tag_keys, keyword, top_k=20)
+        top_matches = find_closest_entries_by_tag_match(embedding_df, tag_keys, keyword, top_k=10)
         matches.extend(top_matches)
 
-    top_results = sorted(matches, key=lambda x: x[1], reverse=True)[:20]
+    top_results = sorted(matches, key=lambda x: x[1], reverse=True)[:10]
     indexes = [i for i, _ in top_results]
     return df.iloc[indexes]
 
