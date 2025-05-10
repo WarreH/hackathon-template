@@ -1,0 +1,17 @@
+starlette >= 0.40.0
+sse-starlette>=2.2.1
+uvicorn >= 0.34.0
+httptools>=0.6.2 # Lower versions than 0.6.2 are not python 3.13 compatible
+
+fastapi~=0.115.6
+pydantic~=2.10.5
+pydantic[email]
+pydantic-extra-types
+
+python-dateutil~=2.8.2
+
+requests == 2.32.2
+google ~= 3.0.0
+google-auth == 2.27.0
+
+google-cloud-storage ~= 2.14.0

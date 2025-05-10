@@ -1,0 +1,16 @@
+services:
+  backend:
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    entrypoint: ["python", "app/main.py"]
+    tty: true
+    restart: unless-stopped
+    volumes:
+      - ./backend:/backend:ro
+      - ./.docker/.ipython:/root/.ipython:cached
+    environment:
+      PYTHONPATH: .
+      environment: "development"
+    ports:
+      - "8000:8000"

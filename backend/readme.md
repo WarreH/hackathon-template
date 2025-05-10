@@ -1,4 +1,3 @@
-# Start server
-````
-fastapi dev simple_api.py --port 8080
-````
+# IDE Setup
+Mark `backend` folder as `source`.
+Run docker_compose
