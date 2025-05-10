@@ -38,3 +38,4 @@ class PyRecommendedResult(PyCandidateResult):
         description="For each algorithm used, the score for the location recommended"
     )
     description: str
+    name: str

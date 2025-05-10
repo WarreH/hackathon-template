@@ -42,7 +42,8 @@ def personalise_computation(user_query: PyRecQuery, candidates: list[PyCandidate
                 **candidate.model_dump(),
                 score=score,
                 ensemble_scores=ensemble,
-                description=candidate.osm_tags["description"]
+                description=candidate.osm_tags["description"],
+                name=candidate.osm_tags["name"]
             )
         )
     return resulting_scores
