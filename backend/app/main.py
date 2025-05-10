@@ -36,7 +36,7 @@ if settings.is_debug:
         "http://127.0.0.1:8000"
     ]
 
-app_name = "North Start Compass"
+app_name = "Star Compass"
 
 # -----
 # Middleware
