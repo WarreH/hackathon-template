@@ -7,7 +7,7 @@ services:
     tty: true
     restart: unless-stopped
     volumes:
-      - ./backend:/backend:ro
+      - ./backend:/backend
       - ./.docker/.ipython:/root/.ipython:cached
     environment:
       PYTHONPATH: .

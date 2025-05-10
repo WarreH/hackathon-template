@@ -4,6 +4,7 @@ uvicorn >= 0.34.0
 httptools>=0.6.2 # Lower versions than 0.6.2 are not python 3.13 compatible
 
 fastapi~=0.115.6
+python-multipart ~= 0.0.20
 pydantic~=2.10.5
 pydantic[email]
 pydantic-extra-types
