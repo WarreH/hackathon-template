@@ -11,7 +11,7 @@ def personalise_computation(candidates: list[PyCandidateResult]) -> list[PyRecom
     resulting_scores = []
 
     for candidate in candidates:
-        ensemble_scores: dict[str, float] = ...  # TODO
+        ensemble_scores: dict[str, float] = {"boop": 1.0} # TODO
         score = sum(ensemble_scores.values())
 
         resulting_scores.append(

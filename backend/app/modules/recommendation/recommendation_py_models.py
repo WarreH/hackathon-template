@@ -19,6 +19,7 @@ class PyCandidateResult(BaseModel):
     All options reduced to a couple, this recommendation
     """
     location: PyLocation
+    distance: float
 
     osm_tags: dict
 
