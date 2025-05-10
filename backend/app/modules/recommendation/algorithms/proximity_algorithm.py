@@ -7,7 +7,7 @@ from app.modules.location.location_py_model import PyLocation
 
 def proximity_algorithm(duck: DuckDBPyConnection,
                         current_pos: PyLocation,
-                        long_lat_max: float) -> pl.DataFrame:
+                        max_distance_meters: float) -> pl.DataFrame:
     stmt = f"""
     SELECT 
         id,
@@ -15,15 +15,20 @@ def proximity_algorithm(duck: DuckDBPyConnection,
         lon,
         lat,
         tags,
+        ST_Distance(
+            ST_POINT(lon, lat),
+            ST_POINT({current_pos.longitude}, {current_pos.latitude})
+        ) AS distance
     FROM {SOURCE_DATASET}
     WHERE 
         -- Filter out 'ways' or 'relation'
         type == $node_type 
         -- Filter on distance
-        AND ST_Distance(
-            ST_Point(lon, lat), 
-            ST_Point({current_pos.longitude}, {current_pos.latitude})
-        ) <= {long_lat_max}
+        AND ST_DWithin(
+            ST_POINT(lon, lat),
+            ST_POINT({current_pos.longitude}, {current_pos.latitude}),
+            {max_distance_meters}
+            )
     """
     filter_weg_set = {
         '%"source": "PSG(could be inaccurately)"%',

@@ -13,19 +13,22 @@ def candidate_computation(duck: DuckDBPyConnection,
                           candidate_n: int) -> list[PyCandidateResult]:
     # -----
     # Algorithm Parameters
-    long_lat_max: float = 100.0  # In meters
-
-    # TODO - everything lol
-    batch_one: pl.DataFrame = proximity_algorithm(duck=duck,
-                                                  current_pos=user_query_param.location,
-                                                  long_lat_max=long_lat_max)
+    max_distance_meters: float = 0.002  # 0.001 is approx 100m
 
     # -----
-    # Assemble into candidates
+    # Filtering based on distance and some "this won't be useful" tags
+    batch_one: pl.DataFrame = proximity_algorithm(duck=duck,
+                                                  current_pos=user_query_param.location,
+                                                  max_distance_meters=max_distance_meters)
+
+    # -----
+    # Applying cosine similarity
+    # TODO batch_two = apply_cosine_similarity(user_query_param.interest)
+    batch_two = batch_one
+
+    # -----
+    # Assemble return
     candidates: list[PyCandidateResult] = []
-
-    batch_two = batch_one.head(10)
-
     for row in batch_two.to_dicts():
         labels = json.loads(row['tags'])
 
@@ -36,6 +39,7 @@ def candidate_computation(duck: DuckDBPyConnection,
                     latitude=row["lat"]
                 ),
                 osm_tags=labels,
+                distance=row["distance"]
             )
         )
 
