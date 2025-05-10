@@ -1,14 +1,18 @@
+from duckdb import DuckDBPyConnection
+
 from app.modules.recommendation.recommendation_py_models import PyRecommendedResult, PyCandidateResult, PyRecQuery
 from app.systems.recommendation_computations.candidate_computation import candidate_computation
 from app.systems.recommendation_computations.personalise_computation import personalise_computation
 
 
-async def recommend_locations(user_query_param: PyRecQuery,
+async def recommend_locations(duck: DuckDBPyConnection,
+                              user_query_param: PyRecQuery,
                               n_recommendations: int) -> list[PyRecommendedResult]:
     """
     Top recommendation function.
     TO BE CALLED IN ENDPOINT
 
+    :param duck:
     :param user_query_param:
     :param n_recommendations: Maximum Requested recommendations (could be less!)
     :return: list of recommended locations
@@ -18,8 +22,9 @@ async def recommend_locations(user_query_param: PyRecQuery,
     # 1) Generate candidates
     # -----
     candidate_n = n_recommendations+10
-    candidates: list[PyCandidateResult] = candidate_computation(user_query_param=user_query_param,
-                                             candidate_n=candidate_n)
+    candidates: list[PyCandidateResult] = candidate_computation(duck=duck,
+                                                                user_query_param=user_query_param,
+                                                                candidate_n=candidate_n)
 
     # -----
     # 2) Apply ensembles to each item in candidate list

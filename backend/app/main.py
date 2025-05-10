@@ -9,7 +9,7 @@ from app.api.interests_router import interest_router
 from app.api.picture_router import picture_router
 from app.api.recommendations_router import rec_router
 from app.modules.duckdb.dataset_to_duckdb import load_dataset_in_duckdb
-from app.modules.duckdb.duckdb_instance import get_duckdb_connection, database_url
+from app.modules.duckdb.duckdb_instance import get_duckdb_connection, database_url, setup_db
 from app.modules.settings.settings import settings
 
 
@@ -22,6 +22,7 @@ async def lifespan(_app: FastAPI):
     # Startup here
     conn = duckdb.connect(database=database_url)
     load_dataset_in_duckdb(duck=conn)
+    setup_db(duck=conn)
 
     yield
     # Shutdown here
