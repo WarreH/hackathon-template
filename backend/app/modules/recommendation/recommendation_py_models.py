@@ -31,7 +31,7 @@ class PyRecommendedResult(PyCandidateResult):
     """
 
     # Resulting rankings
-    score: float = Field(ge=0, le=1,
+    score: float = Field(ge=0,
                          description="Resulting score of the recommendation"
                          )
     ensemble_scores: dict[str, float] = Field(
@@ -39,3 +39,4 @@ class PyRecommendedResult(PyCandidateResult):
     )
     description: str
     name: str
+    label: str

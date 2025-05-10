@@ -1,5 +1,6 @@
 from app.modules.recommendation.algorithms.gemini_score import gemini_together
 from app.modules.recommendation.algorithms.generate_description import gemini_description, gemini_batch_description
+from app.modules.recommendation.algorithms.proximity_score import proximity_score
 from app.modules.recommendation.recommendation_py_models import PyRecommendedResult, PyCandidateResult, PyRecQuery
 from unicodedata import category
 from backend.app.modules.dataset.tag_extraction import Data
@@ -38,10 +39,13 @@ def personalise_computation(user_query: PyRecQuery, candidates: list[PyCandidate
     # Gemini evaluate together
     print("Scoring together")
     together_scores: list[float] = gemini_together(user_query=user_query, candidates=candidates)
+    print(together_scores)
     for i, candidate in enumerate(candidates):
         ensemble_scores[i]["gemini_together"] = together_scores[i]
 
-    for ensemble, candidate in zip(ensemble_scores, candidates):
+    proximity_scores = proximity_score(candidates=candidates)
+    for i, ensemble, candidate in zip(range(len(candidates)) ,ensemble_scores, candidates):
+        ensemble["proximity"] = proximity_scores[i]
         score = sum(ensemble.values())
 
         resulting_scores.append(

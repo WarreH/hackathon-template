@@ -30,7 +30,7 @@ async def recommend_locations(duck: DuckDBPyConnection,
     # 2) Apply ensembles to each item in candidate list
     # -----
     computed_recommendations: list[PyRecommendedResult] = personalise_computation(user_query=user_query_param,
-                                                                                  candidates=candidates)[:10]
+                                                                                  candidates=candidates)
 
     # -----
     # 3) Sort by rank and return
@@ -38,7 +38,7 @@ async def recommend_locations(duck: DuckDBPyConnection,
     sorted_recommendations = sorted(computed_recommendations,
                                     key=lambda recommendation: recommendation.score,
                                     reverse=True)
-    print(list(map(lambda p: p.score, sorted_recommendations)))
+    print(f"Calculated scores: {list(map(lambda p: p.score, sorted_recommendations))}")
 
     return [recommendation for
             recommendation in
