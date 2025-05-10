@@ -1,13 +1,15 @@
-import os
 from contextlib import asynccontextmanager
 
 import uvicorn
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
+import duckdb
 
 from app.api.interests_router import interest_router
 from app.api.picture_router import picture_router
 from app.api.recommendations_router import rec_router
+from app.modules.duckdb.dataset_to_duckdb import load_dataset_in_duckdb
+from app.modules.duckdb.duckdb_instance import get_duckdb_connection, database_url
 from app.modules.settings.settings import settings
 
 
@@ -18,6 +20,9 @@ async def lifespan(_app: FastAPI):
     To understand more, read https://fastapi.tiangolo.com/advanced/events/
     """
     # Startup here
+    conn = duckdb.connect(database=database_url)
+    load_dataset_in_duckdb(duck=conn)
+
     yield
     # Shutdown here
 
@@ -50,7 +55,7 @@ app = FastAPI(lifespan=lifespan,
               title=f"{app_name} API",
               docs_url="/docs",
               terms_of_service="/tos",
-              contact={"email": f"info@{app_name}.be"},
+              contact={"email": f"info@{app_name.replace(" ", "").lower()}.be"},
               licence_info={f"MIT License Copyright (c) 2023 {app_name}"},
               middleware=middleware
               )
