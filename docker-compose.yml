@@ -12,5 +12,6 @@ services:
     environment:
       PYTHONPATH: .
       environment: "development"
+      GOOGLE_API_KEY: "AIthisisyourkeypleasechangeit"
     ports:
       - "8080:8080"

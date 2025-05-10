@@ -37,3 +37,4 @@ class PyRecommendedResult(PyCandidateResult):
     ensemble_scores: dict[str, float] = Field(
         description="For each algorithm used, the score for the location recommended"
     )
+    description: str
