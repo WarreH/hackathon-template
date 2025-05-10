@@ -87,6 +87,6 @@ app.add_middleware(
 if __name__ == "__main__":
     reload = settings.is_debug  # If running in local environment, reload the server on changes
     try:
-        uvicorn.run("main:app", host="0.0.0.0", reload=reload, port=8000)
+        uvicorn.run("main:app", host="0.0.0.0", reload=reload, port=8080)
     except Exception as e:
         print(f"Initializing app failed: {e}")
