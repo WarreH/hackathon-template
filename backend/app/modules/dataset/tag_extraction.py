@@ -1,8 +1,7 @@
 import pandas as pd
 from datasets import load_dataset
 import json
-from backend.app.modules.dataset.gemini import Gemini
-import openpyxl
+from app.modules.dataset.gemini import Gemini
 import ast
 import re
 import difflib
@@ -80,34 +79,6 @@ class Data:
         )
         return categories
 
-    def label_candidate(self, candidate):
-        response = data.generalize_categories()
-        categories = [
-            "Food & Drink",
-            "Cultural"
-            "Shops",
-            "Leisure",
-            "Sports",
-            "Public Transit",
-            "Heritage Monuments",
-            "Residential",
-            "Health & Emergency",
-            "Entertainement"
-        ]
-
-        resp = self.gem.prompt(
-            "Given this list of categories. Look at the value of the data and choose in which categorie it"
-            "needs to be! So as response give the name of the categorie that fits the value the best. So"
-            "for example a categorie can be restaurant (out of the given list of categories) then a value "
-            "of asian restaurant needs to be matched to this restaurant categorie. So as response you answer"
-            "restaurant. If you don't have any good match with the categories, then answer with None. Do not "
-            "answer any other text or explaination, just the categorie name or None. "
-            "The categories: " + str(categories) + ". The value: " + candidate + "."
-        )
-        label = resp.text.replace("`", "").replace("python", "")
-
-        return label
-
     # def _normalize(self, text: str) -> str:
     #     # strip surrounding quotes/backticks, lowercase, remove non‐alphanumerics, collapse spaces
     #     t = text.strip().strip("'\"`")
@@ -127,70 +98,71 @@ class Data:
 
 
     def load_in_csv(self, categories,filename="catogarized_data.xlsx"):
+        ...
         # 1) Create a workbook and grab the active sheet
-        wb = openpyxl.Workbook()
-        ws = wb.active
-        ws.title = "Sheet1"
-
-        # 2) Write headers (the union of all keys in rows)
-        for col_idx, header in enumerate(categories, start=1):
-            cell = ws.cell(row=1, column=col_idx, value=header)
-        wb.save(filename)
-        print(len(self.without_empty_tags))
-        for data in self.without_empty_tags:
-            print(data)
-            resp = self.gem.prompt(
-                "Given this list of categories. Look at the value of the data and choose in which categorie it"
-                "needs to be! So as response give the name of the categorie that fits the value the best. So"
-                "for example a categorie can be restaurant (out of the given list of categories) then a value "
-                "of asian restaurant needs to be matched to this restaurant categorie. So as response you answer"
-                "restaurant. If you don't have any good match with the categories, then answer with None. Do not "
-                "answer any other text or explaination, just the categorie name or None. "
-                "The categories: " + str(categories) + ". The value: " + str(data["tags"]) + "."
-            )
-            category = resp.text.replace("`", "").replace("python","")  # normalize
-            try:
-                print('1')
-                category = eval(category)
-            except Exception as e:
-                print('2')
-                print(f"{category} gives {e}")
-
-            # skip empty / no-match
-            if not category or category.lower() == "none":
-                print("3")
-                continue
-
-            # find column index (1–10)
-            try:
-                print("4")
-                print('categories: '+str(categories))
-                for indx, cat in enumerate(categories):
-                    print('cat: '+str(cat)+", categories: "+str(category))
-                    if str(cat).lower() == category.lower():
-                        print("index: "+str(indx))
-                        col_idx = indx+1
-                #col_idx = categories.index(category) + 1
-            except ValueError:
-                print("5")
-                print(f"{category} is not in categories, skipping")
-                continue
-
-            print('6')
-            # find next empty row in that column
-            from openpyxl.utils import get_column_letter
-            letter = get_column_letter(col_idx)
-            for row in range(2, ws.max_row + 2):
-                print("7")
-                if ws[f"{letter}{row}"].value is None:
-                    print("8")
-                    ws.cell(row=row, column=col_idx, value=data["id"])
-                    wb.save(filename)
-                    break
-
-        # finally, save once
-        wb.save(filename)
-        print("Done with the Excel file")
+        # wb = openpyxl.Workbook()
+        # ws = wb.active
+        # ws.title = "Sheet1"
+        #
+        # # 2) Write headers (the union of all keys in rows)
+        # for col_idx, header in enumerate(categories, start=1):
+        #     cell = ws.cell(row=1, column=col_idx, value=header)
+        # wb.save(filename)
+        # print(len(self.without_empty_tags))
+        # for data in self.without_empty_tags:
+        #     print(data)
+        #     resp = self.gem.prompt(
+        #         "Given this list of categories. Look at the value of the data and choose in which categorie it"
+        #         "needs to be! So as response give the name of the categorie that fits the value the best. So"
+        #         "for example a categorie can be restaurant (out of the given list of categories) then a value "
+        #         "of asian restaurant needs to be matched to this restaurant categorie. So as response you answer"
+        #         "restaurant. If you don't have any good match with the categories, then answer with None. Do not "
+        #         "answer any other text or explaination, just the categorie name or None. "
+        #         "The categories: " + str(categories) + ". The value: " + str(data["tags"]) + "."
+        #     )
+        #     category = resp.text.replace("`", "").replace("python","")  # normalize
+        #     try:
+        #         print('1')
+        #         category = eval(category)
+        #     except Exception as e:
+        #         print('2')
+        #         print(f"{category} gives {e}")
+        #
+        #     # skip empty / no-match
+        #     if not category or category.lower() == "none":
+        #         print("3")
+        #         continue
+        #
+        #     # find column index (1–10)
+        #     try:
+        #         print("4")
+        #         print('categories: '+str(categories))
+        #         for indx, cat in enumerate(categories):
+        #             print('cat: '+str(cat)+", categories: "+str(category))
+        #             if str(cat).lower() == category.lower():
+        #                 print("index: "+str(indx))
+        #                 col_idx = indx+1
+        #         #col_idx = categories.index(category) + 1
+        #     except ValueError:
+        #         print("5")
+        #         print(f"{category} is not in categories, skipping")
+        #         continue
+        #
+        #     print('6')
+        #     # find next empty row in that column
+        #     from openpyxl.utils import get_column_letter
+        #     letter = get_column_letter(col_idx)
+        #     for row in range(2, ws.max_row + 2):
+        #         print("7")
+        #         if ws[f"{letter}{row}"].value is None:
+        #             print("8")
+        #             ws.cell(row=row, column=col_idx, value=data["id"])
+        #             wb.save(filename)
+        #             break
+        #
+        # # finally, save once
+        # wb.save(filename)
+        # print("Done with the Excel file")
 
         # for ind, data in enumerate(self.dataset,start=2):
         #     response = self.gem.prompt(
